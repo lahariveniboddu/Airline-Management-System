@@ -1,0 +1,183 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class AirlineManagementSystem {
+
+    // Flight class
+    static class Flight {
+        int flightId;
+        String source;
+        String destination;
+        int seats;
+        double price;
+
+        Flight(int flightId, String source, String destination, int seats, double price) {
+            this.flightId = flightId;
+            this.source = source;
+            this.destination = destination;
+            this.seats = seats;
+            this.price = price;
+        }
+    }
+
+    // Booking class
+    static class Booking {
+        int bookingId;
+        String passengerName;
+        int flightId;
+
+        Booking(int bookingId, String passengerName, int flightId) {
+            this.bookingId = bookingId;
+            this.passengerName = passengerName;
+            this.flightId = flightId;
+        }
+    }
+
+    static ArrayList<Flight> flights = new ArrayList<>();
+    static ArrayList<Booking> bookings = new ArrayList<>();
+    static int bookingCounter = 1;
+
+    // Add flight
+    static void addFlight(Scanner sc) {
+        System.out.print("Enter Flight ID: ");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("Enter Source: ");
+        String source = sc.nextLine();
+
+        System.out.print("Enter Destination: ");
+        String destination = sc.nextLine();
+
+        System.out.print("Enter Available Seats: ");
+        int seats = sc.nextInt();
+
+        System.out.print("Enter Ticket Price: ");
+        double price = sc.nextDouble();
+
+        flights.add(new Flight(id, source, destination, seats, price));
+        System.out.println("Flight added successfully.");
+    }
+
+    // View flights
+    static void viewFlights() {
+        if (flights.isEmpty()) {
+            System.out.println("No flights available.");
+            return;
+        }
+
+        for (Flight f : flights) {
+            System.out.println("Flight ID: " + f.flightId +
+                    ", From: " + f.source +
+                    ", To: " + f.destination +
+                    ", Seats: " + f.seats +
+                    ", Price: ₹" + f.price);
+        }
+    }
+
+    // Book ticket
+    static void bookTicket(Scanner sc) {
+        System.out.print("Enter Flight ID: ");
+        int flightId = sc.nextInt();
+        sc.nextLine();
+
+        for (Flight f : flights) {
+            if (f.flightId == flightId) {
+                if (f.seats > 0) {
+                    System.out.print("Enter Passenger Name: ");
+                    String name = sc.nextLine();
+
+                    bookings.add(new Booking(bookingCounter++, name, flightId));
+                    f.seats--;
+
+                    System.out.println("Ticket booked successfully.");
+                    return;
+                } else {
+                    System.out.println("No seats available.");
+                    return;
+                }
+            }
+        }
+        System.out.println("Flight not found.");
+    }
+
+    // View bookings
+    static void viewBookings() {
+        if (bookings.isEmpty()) {
+            System.out.println("No bookings found.");
+            return;
+        }
+
+        for (Booking b : bookings) {
+            System.out.println("Booking ID: " + b.bookingId +
+                    ", Passenger: " + b.passengerName +
+                    ", Flight ID: " + b.flightId);
+        }
+    }
+
+    // Cancel booking
+    static void cancelBooking(Scanner sc) {
+        System.out.print("Enter Booking ID: ");
+        int bookingId = sc.nextInt();
+
+        for (Booking b : bookings) {
+            if (b.bookingId == bookingId) {
+                bookings.remove(b);
+
+                for (Flight f : flights) {
+                    if (f.flightId == b.flightId) {
+                        f.seats++;
+                        break;
+                    }
+                }
+
+                System.out.println("Booking cancelled successfully.");
+                return;
+            }
+        }
+        System.out.println("Booking not found.");
+    }
+
+    // Main method
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\n--- Airline Management System ---");
+            System.out.println("1. Add Flight");
+            System.out.println("2. View Flights");
+            System.out.println("3. Book Ticket");
+            System.out.println("4. View Bookings");
+            System.out.println("5. Cancel Booking");
+            System.out.println("6. Exit");
+            System.out.print("Choose option: ");
+
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    addFlight(sc);
+                    break;
+                case 2:
+                    viewFlights();
+                    break;
+                case 3:
+                    bookTicket(sc);
+                    break;
+                case 4:
+                    viewBookings();
+                    break;
+                case 5:
+                    cancelBooking(sc);
+                    break;
+                case 6:
+                    System.out.println("Thank you for using Airline Management System.");
+                    sc.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice!");
+            }
+        }
+    }
+}
